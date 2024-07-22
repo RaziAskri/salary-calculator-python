@@ -2,49 +2,20 @@ pipeline {
     agent any
 
     environment {
-        // Define any environment variables you might need
-        DOCKER_REGISTRY = 'your-docker-registry'
-        DOCKER_IMAGE = 'your-image-name'
-        GIT_REPO = 'https://github.com/your-repo.git'
+        DOCKER_REGISTRY = 'docker.io'
+        DOCKER_IMAGE = '28401280/salary-calculator-py'
+        GIT_REPO = 'https://github.com/RaziAskri/salary-calculator-python.git'
+        DOCKER_CREDENTIALS_ID = 'dockerhub-credentials-id' // Jenkins credentials ID for Docker Hub
     }
 
     stages {
         stage('Checkout') {
             steps {
                 // Checkout code from GitHub
-                git url: "${env.GIT_REPO}", branch: 'main'
+                git url: "${env.GIT_REPO}", branch: 'develop'
             }
         }
-        
-        stage('Setup Python Environment') {
-            steps {
-                script {
-                    // Setup Python environment (optional)
-                    // Assuming you have a requirements.txt file
-                    sh 'python3 -m venv venv'
-                    sh './venv/bin/pip install -r requirements.txt'
-                }
-            }
-        }
-        
-        stage('Lint') {
-            steps {
-                script {
-                    // Lint your Python code (optional)
-                    sh './venv/bin/flake8 .'
-                }
-            }
-        }
-        
-        stage('Test') {
-            steps {
-                script {
-                    // Run your Python tests (optional)
-                    sh './venv/bin/python -m unittest discover'
-                }
-            }
-        }
-        
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -53,41 +24,49 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Push Docker Image') {
             steps {
                 script {
-                    // Log in to Docker Hub (or your Docker registry)
-                    sh "echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin"
-                    // Push Docker image
-                    sh "docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:latest"
+                    // Log in to Docker Hub
+                    docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_CREDENTIALS_ID}") {
+                        // Push Docker image
+                        sh "docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:latest"
+                    }
                 }
             }
         }
-        
-        stage('Deploy') {
+
+        stage('Run Docker Container') {
             steps {
                 script {
-                    // Deploy Docker container (example using docker-compose)
-                    sh 'docker-compose down'
-                    sh 'docker-compose up -d'
+                    // Run the Docker container (adjust as necessary for your use case)
+                    sh 'docker run --rm ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:latest'
                 }
             }
         }
     }
-    
+
     post {
         always {
             // Clean up workspace
             cleanWs()
         }
         success {
-            // Notify success (optional)
-            echo 'Deployment succeeded!'
+            // Notify success via email
+            mail(
+                to: "${env.RECIPIENT_EMAIL}",
+                subject: "Jenkins Build Successful: ${env.JOB_NAME} ${env.BUILD_NUMBER}",
+                body: "Good news! The build ${env.JOB_NAME} ${env.BUILD_NUMBER} was successful. Check the Jenkins job at ${env.BUILD_URL}."
+            )
         }
         failure {
-            // Notify failure (optional)
-            echo 'Deployment failed!'
+            // Notify failure via email
+            mail(
+                to: "${env.RECIPIENT_EMAIL}",
+                subject: "Jenkins Build Failed: ${env.JOB_NAME} ${env.BUILD_NUMBER}",
+                body: "Oops! The build ${env.JOB_NAME} ${env.BUILD_NUMBER} failed. Check the Jenkins job at ${env.BUILD_URL}."
+            )
         }
     }
 }
