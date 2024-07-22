@@ -1,5 +1,5 @@
 # salary-calculator-python
-sample program to test it with Jenkins and Docker
+sample python program to test it with Jenkins and Docker
 
 *****************
 Jenkinsfile-part
