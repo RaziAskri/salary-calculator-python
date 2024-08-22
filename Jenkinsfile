@@ -1,9 +1,13 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'python:3.8' // Official Python 3.8 Docker image
+            args '-u root'     // Run as root user if needed
+        }
+    }
 
     environment {
         VENV_DIR = ".venv"
-        PYTHON_VERSION = "3.8" // Specify the Python version you want to use
     }
 
     stages {
@@ -11,7 +15,7 @@ pipeline {
             steps {
                 script {
                     // Create a virtual environment
-                    sh "python${PYTHON_VERSION} -m venv ${VENV_DIR}"
+                    sh "python -m venv ${VENV_DIR}"
                     
                     // Activate virtual environment and install dependencies
                     sh """
