@@ -2,36 +2,34 @@ pipeline {
     agent any
 
     stages {
-        stage('Verify Python Installation') {
+        stage('Checkout Code') {
             steps {
-                sh 'which python'
-                sh 'which python3'
-                sh 'python --version'
-                sh 'python3 --version'
+                // Checkout the code from Git repository
+                checkout scm
             }
         }
-        
-        stage('Run Python Script') {
+
+        stage('List Repository Contents') {
             steps {
-                script {
-                    try {
-                        sh 'python3 salary-calculator.py 160 20'
-                    } catch (Exception e) {
-                        echo "Error occurred: ${e.message}"
-                        currentBuild.result = 'FAILURE'
-                        throw e
-                    }
-                }
+                // List the files in the repository to verify checkout
+                sh 'ls -la'
+            }
+        }
+
+        stage('Run Test Command') {
+            steps {
+                // Run a simple command to test the environment
+                sh 'echo "Repository checkout and basic command test successful!"'
             }
         }
     }
 
     post {
         success {
-            echo 'Python script executed successfully.'
+            echo 'Pipeline executed successfully.'
         }
         failure {
-            echo 'Python script execution failed.'
+            echo 'Pipeline execution failed.'
         }
     }
 }
