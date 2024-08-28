@@ -1,13 +1,21 @@
 pipeline {
-    agent any // Use any available agent
+    agent any
 
     stages {
+        stage('Verify Python Installation') {
+            steps {
+                sh 'which python'
+                sh 'which python3'
+                sh 'python --version'
+                sh 'python3 --version'
+            }
+        }
+        
         stage('Run Python Script') {
             steps {
                 script {
                     try {
-                        // Run the Python script
-                        sh 'python salary-calculator.py 160 20'
+                        sh 'python3 salary-calculator.py 160 20'
                     } catch (Exception e) {
                         echo "Error occurred: ${e.message}"
                         currentBuild.result = 'FAILURE'
