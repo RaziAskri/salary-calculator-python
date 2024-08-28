@@ -1,16 +1,19 @@
 pipeline {
-    agent {
-        docker {
-            image 'python:3.8' // Use an official Python Docker image
-            args '-u root'     // Optional: Run as root user
-        }
-    }
+    agent any // Use any available agent
 
     stages {
         stage('Run Python Script') {
             steps {
-                // Execute the Python script
-                sh 'python salary-calculator.py 160 20'
+                script {
+                    try {
+                        // Run the Python script
+                        sh 'python salary-calculator.py 160 20'
+                    } catch (Exception e) {
+                        echo "Error occurred: ${e.message}"
+                        currentBuild.result = 'FAILURE'
+                        throw e
+                    }
+                }
             }
         }
     }
