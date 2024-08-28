@@ -27,9 +27,27 @@ pipeline {
     post {
         success {
             echo 'Pipeline executed successfully.'
+            emailext(
+                subject: "Jenkins Pipeline Successful: ${env.JOB_NAME} - Build # ${env.BUILD_NUMBER}",
+                body: "The build was successful.\n\n" +
+                      "Job: ${env.JOB_NAME}\n" +
+                      "Build Number: ${env.BUILD_NUMBER}\n" +
+                      "Build URL: ${env.BUILD_URL}\n" +
+                      "Build Result: ${currentBuild.result}",
+                to: 'your-email@example.com'
+            )
         }
         failure {
             echo 'Pipeline execution failed.'
+            emailext(
+                subject: "Jenkins Pipeline Failed: ${env.JOB_NAME} - Build # ${env.BUILD_NUMBER}",
+                body: "The build failed.\n\n" +
+                      "Job: ${env.JOB_NAME}\n" +
+                      "Build Number: ${env.BUILD_NUMBER}\n" +
+                      "Build URL: ${env.BUILD_URL}\n" +
+                      "Build Result: ${currentBuild.result}",
+                to: 'your-email@example.com'
+            )
         }
     }
 }
