@@ -34,7 +34,7 @@ pipeline {
                       "Build Number: ${env.BUILD_NUMBER}\n" +
                       "Build URL: ${env.BUILD_URL}\n" +
                       "Build Result: ${currentBuild.result}",
-                to: 'your-email@example.com'
+                to: 'askrirazi@gmail.com'
             )
         }
         failure {
@@ -46,7 +46,7 @@ pipeline {
                       "Build Number: ${env.BUILD_NUMBER}\n" +
                       "Build URL: ${env.BUILD_URL}\n" +
                       "Build Result: ${currentBuild.result}",
-                to: 'your-email@example.com'
+                to: 'askrirazi@gmail.com'
             )
         }
     }
