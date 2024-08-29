@@ -25,13 +25,17 @@ pipeline {
 
         stage('Run Python Script') {
             steps {
-                // Execute the Python script
+                // Execute the Python script with arguments
                 script {
-                    sh 'python3 salary-calculator.py'
+                    // Define the arguments
+                    def hoursWorked = 160
+                    def hourlyRate = 25
+
+                    // Run the Python script with the defined arguments
+                    sh "python3 salary-calculator.py ${hoursWorked} ${hourlyRate}"
                 }
             }
         }
-    }
 
     post {
         success {
