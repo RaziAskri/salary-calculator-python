@@ -24,6 +24,16 @@ pipeline {
         }
     }
 
+        stage('Run Python Script') {
+            steps {
+                
+                // Execute the Python script
+                script {
+                    sh 'python3 salary-calculator.py'
+                }
+            }
+        }
+
     post {
         success {
             echo 'Pipeline executed successfully.'
