@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'  // Jenkins credentials ID for Docker Hub
-        DOCKER_IMAGE_NAME = 'your-dockerhub-username/salary-calculator:latest'
+        DOCKER_IMAGE_NAME = '28401280/salary-calculator:latest'
     }
 
     stages {
