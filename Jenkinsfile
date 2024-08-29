@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'  // Jenkins credentials ID for Docker Hub
+        DOCKER_IMAGE_NAME = 'your-dockerhub-username/salary-calculator:latest'
+    }
+
     stages {
         stage('Checkout Code') {
             steps {
@@ -33,6 +38,29 @@ pipeline {
 
                     // Run the Python script with the defined arguments
                     sh "python3 salary-calculator.py ${hoursWorked} ${hourlyRate}"
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build the Docker image
+                    sh "docker build -t ${DOCKER_IMAGE_NAME} ."
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                    }
+                    
+                    // Push the Docker image
+                    sh "docker push ${DOCKER_IMAGE_NAME}"
                 }
             }
         }
