@@ -52,4 +52,11 @@ pipeline {
                 subject: "Jenkins Pipeline Failed: ${env.JOB_NAME} - Build # ${env.BUILD_NUMBER}",
                 body: "The build failed.\n\n" +
                       "Job: ${env.JOB_NAME}\n" +
-                      "Build Number:
+                      "Build Number: ${env.BUILD_NUMBER}\n" +
+                      "Build URL: ${env.BUILD_URL}\n" +
+                      "Build Result: ${currentBuild.result}",
+                to: 'askrirazi@gmail.com'
+            )
+        }
+    }
+}
